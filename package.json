@@ -1,0 +1,37 @@
+{
+  "name": "phonebook_backend",
+  "version": "0.0.1",
+  "description": "https://www.mooc.fi/en/ <br /> --> <b>Full Stack open 2022</b> <br /> https://fullstackopen.com/en/part3/node_js_and_express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\\\" && exit 1",
+    "build:ui": "rm -rf reactbuild && cd ../react-mooc.fi/part3/phone_book/ && npm run build && cp -r build ../../../nodeJS-mooc.fi/reactbuild",
+    "deploy": "git push heroku main",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
+    "logs:prod": "heroku logs --tail"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikalegall/nodeJS-mooc.fi.git"
+  },
+  "author": "Mika Le Gall",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikalegall/nodeJS-mooc.fi/issues"
+  },
+  "homepage": "https://github.com/mikalegall/nodeJS-mooc.fi#readme",
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.1",
+    "mongoose": "^6.3.2",
+    "morgan": "^1.10.0"
+  }
+}

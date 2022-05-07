@@ -1,0 +1,8 @@
+# https://github.com/Huachao/vscode-restclient/blob/master/README.md#usage
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Donald Duck",
+    "number": 313
+}

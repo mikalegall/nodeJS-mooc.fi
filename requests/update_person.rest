@@ -1,0 +1,10 @@
+# https://github.com/Huachao/vscode-restclient/blob/master/README.md#usage
+// PUT https://mikalegallbackend.herokuapp.com/api/persons/62761222cbadf9b957b87240
+PUT http://localhost:3001/api/persons/62761222cbadf9b957b87240
+
+Content-Type: application/json
+
+{
+    "name": "Mika",
+    "number": 999
+}
