@@ -1,0 +1,17 @@
+# https://github.com/Huachao/vscode-restclient/blob/master/README.md#usage
+POST http://localhost:3001/api/blogs/
+Content-Type: application/json
+
+# {
+#     "title": "Linux",
+#     "author": "Mika Le Gall",
+#     "url": "https://rakenne.wordpress.com/2020/10/29/linux-tuo-windows-kayttajan-morko/",
+#     "likes": 3
+# }
+
+{
+    "title": "JSON-LD",
+    "author": "Mika Le Gall",
+    "url": "https://pakollinen1234.wordpress.com/2021/04/11/digitaalinen-viestinta/",
+    "likes": 1
+}
