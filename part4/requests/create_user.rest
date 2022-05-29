@@ -1,0 +1,9 @@
+# https://github.com/Huachao/vscode-restclient/blob/master/README.md#usage
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "username": "Lare",
+    "name": "Mika Le Gall",
+    "password": "salasana"
+}

@@ -7,13 +7,14 @@ const requestLogger = (request, response, next) => {
   logger.info('---')
   next()
 }
+
 /* 
 // Middleware logger
 var morgan = require('morgan') // npm install morgan
 morgan.token('body', function getBody(req) {
   return JSON.stringify(req.body)
 })
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body')) // https://github.com/expressjs/morgan
+//app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body')) // https://github.com/expressjs/morgan
  */
 
 
@@ -28,6 +29,10 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
+  } else if (error.name === 'JsonWebTokenError') {
+    return response.status(401).json({ error: 'invalid token' })
+  } else if (error.name === 'TokenExpiredError') {
+    return response.status(401).json({ error: 'token expired' })
   }
 
   next(error)
@@ -35,6 +40,7 @@ const errorHandler = (error, request, response, next) => {
 
 module.exports = {
   requestLogger,
+  //morgan,
   unknownEndpoint,
   errorHandler
 }

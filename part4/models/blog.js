@@ -9,8 +9,15 @@ const blogSchema = mongoose.Schema({
     required: true // https://mongoosejs.com/docs/validation.html#built-in-validators
   },
   author: String,
-  url: String,
-  likes: Number
+  url:  {
+    type: String,
+    required: true
+  },
+  likes: Number,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User' // Database document reference name is stored in both documents
+  }
 })
 
 // Handle MongoDB id from object to string
