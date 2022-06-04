@@ -1,4 +1,7 @@
 const logger = require('./logger')
+const jwt = require('jsonwebtoken');
+const User = require('../models/user')
+
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -38,9 +41,40 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
+const tokenExtractor = (request, response, next) => {
+
+  const authorization = request.get('authorization')
+
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    // https://stackoverflow.com/questions/36891658/expressjs-append-header-to-incoming-request-object
+    request.headers.token = authorization.substring(7)
+  }
+
+  next()
+}
+
+
+const userExtractor = async (request, response, next) => {
+
+  const token = request.headers.token
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!token || !decodedToken.id) {
+    return response.status(401).json({
+      error: 'Token missing or invalid (can not extract user)'
+    })
+  }
+
+  request.headers.user = await User.findById(decodedToken.id)
+
+  next()
+}
+
+
 module.exports = {
   requestLogger,
   //morgan,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor,
+  userExtractor
 }

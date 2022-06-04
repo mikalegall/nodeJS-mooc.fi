@@ -1,9 +1,9 @@
 const info = (...params) => {
-    console.log(...params)
+    console.log('INFO: ', ...params)
   }
   
 const error = (...params) => {
-  console.error(...params)
+  console.error('ERROR: ', ...params)
 }
   
 // The file exports an object that has two fields, both of which are functions.

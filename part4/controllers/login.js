@@ -27,10 +27,8 @@ loginRouter.post('/', async (request, response) => {
     process.env.SECRET,
     { expiresIn: 60*60 } // token expires in 60*60 seconds, that is, in one hour
     )
-console.log('DEBUG: token = '
-,token
-)
-  response
+
+    response
     .status(200)
     .send({ token, username: user.username, name: user.name })
 })

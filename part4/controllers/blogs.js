@@ -4,20 +4,13 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const { info, error } = require('../utils/logger')
 
-const getTokenFrom = (request) => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
-}
-
 // REST Crud: CREATE
 // blogsRouter.post('/', async (request, response, next) => {
 blogsRouter.post('/', async (request, response) => {
-  const { title, author, url, likes, userId } = request.body
+  const { title, author, url, likes } = request.body
 
-  const token = getTokenFrom(request)
+  const token = request.get('token')
+  const user = request.get('user')
 
   const decodedToken = jwt.verify(token, process.env.SECRET)
   if (!token || !decodedToken.id) {
@@ -25,20 +18,14 @@ blogsRouter.post('/', async (request, response) => {
       error: 'token missing or invalid'
     })
   }
-  //controllers/login.js
-  // const userForToken = {
-  //   username: user.username,
-  //   id: user._id,
-  // }
-  // const token = jwt.sign(userForToken, process.env.SECRET)
-  const user = await User.findById(decodedToken.id)
+
   const blog = new Blog(
     {
       title: title,
       author: author,
       url: url,
       likes: likes || 0,
-      user: user._id
+      user: user.id
     }
   )
   // savedBlog = await blog.save().catch(error => {
@@ -98,8 +85,28 @@ blogsRouter.put('/:id', async (request, response) => {
 
 // REST cruD: DELETE
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+
+  const user = request.get('user')
+  const blog = await Blog.findById(request.params.id)
+
+  if (!blog) {
+    return response.status(404).json({
+      error: `Id ${request.params.id} does not exist`
+    })
+  } else if (blog.user.toString() === user.id.toString()) {
+
+    await Blog.findByIdAndRemove(request.params.id)
+
+    response.status(204).end()
+
+  } else {
+
+    return response.status(403).json({
+      error: 'Blog can be deleted only by the owner'
+    })
+
+  }
+
 })
 
 

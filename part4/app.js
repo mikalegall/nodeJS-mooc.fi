@@ -28,9 +28,14 @@ app.use(express.static('reactbuild'))
 app.use(express.json())
 //app.use(middleware.morgan(':method :url :status :res[content-length] - :response-time ms :body'))  // https://github.com/expressjs/morgan
 app.use(middleware.requestLogger)
+// use the middleware in all routes
+app.use(middleware.tokenExtractor)
 
-// Base endpoint for blogs
-app.use('/api/blogs', blogsRouter)
+
+//app.use(middleware.userExtractor)
+// Base endpoint for blogs:
+// Use the middleware userExtractor only in /api/blogs routes
+app.use('/api/blogs', middleware.userExtractor, blogsRouter)
 // Base endpoint for users
 app.use('/api/users', usersRouter)
 // Base endpoint for login
