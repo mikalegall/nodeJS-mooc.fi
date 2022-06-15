@@ -5,11 +5,20 @@ const app = require('../app')
 
 const api = supertest(app) // Tests can now make HTTP requests to the backend
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
+let token = ''
 
 describe('INTEGRATION TESTS when there is initially some notes saved', () => {
 
     beforeEach(async () => {
+
+        const credentials = {
+            username: process.env.PERSON,
+            password: process.env.PASS
+        }
+        const response = await api.post('/api/login').send(credentials)
+        token = `bearer ${response.body.token}`
 
         await Blog.deleteMany({})
         /*
@@ -30,6 +39,10 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
 
         // insertMany abstracts promise handling behind the scenes
         await Blog.insertMany(helper.initialBlogs)
+
+        await User.deleteMany({})
+        await User.insertMany(helper.initialUsers)
+
     })
 
 
@@ -37,13 +50,26 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
         // https://jestjs.io/docs/asynchronous
         await api
             .get('/api/blogs')
+            .set(
+                {
+                    "Authorization": token,
+                    "Accept": 'application/json'
+                }
+            )
             .expect(200) // SuperTest
             .expect('Content-Type', /application\/json/) // SuperTest
+
     })
 
 
     test('all blogs are returned', async () => {
         const response = await api.get('/api/blogs')
+            .set(
+                {
+                    "Authorization": token,
+                    "Accept": 'application/json'
+                }
+            )
         // Async execution gets here only after the HTTP request is complete
         // The result of HTTP request is saved in variable response
         expect(response.body).toHaveLength(helper.initialBlogs.length) // Jest
@@ -52,6 +78,12 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
 
     test('a specific blogs is within the returned notes', async () => {
         const response = await api.get('/api/blogs')
+            .set(
+                {
+                    "Authorization": token,
+                    "Accept": 'application/json'
+                }
+            )
         const titles = response.body.map(r => r.title)
         expect(titles).toContain('First class tests') // Jest
     })
@@ -63,30 +95,52 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
         test('succeeds with a valid id', async () => {
             const blogsAtStart = await helper.blogsInDb()
 
-            // One property is Date-object (fetched straight from DB without backend server)
+            // One property is Object (fetched straight from DB without backend server)
             const blogToView = blogsAtStart[0]
 
-            // One property is date as a string (backend server handels serialization and parsing to string)
+            // One property is object as a string (backend server handels serialization and parsing to string)
             const resultBlog = await api
                 .get(`/api/blogs/${blogToView.id}`)
+                .set(
+                    {
+                        "Authorization": token,
+                        "Accept": 'application/json'
+                    }
+                )
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
 
-            // From Date-object to date as a string
+            // E.g. from Date-object to 'date as a string' (if there is Date)
             const processedBlogToView = JSON.parse(JSON.stringify(blogToView))
-
             // Dates are in same format and can be compared to be equal
-            expect(resultBlog.body).toEqual(processedBlogToView)
+            //expect(resultBlog.body).toEqual(processedBlogToView)
+
+
+            //backend server handels serialization and parsing to string
+            //resultBlog.body.user
+            /*
+              user: {
+                username: 'teppo',
+                name: 'Teppo Testaaja',
+                id: '629c6cbca039ba4cb0a302e5'
+              }
+            */
+            expect(resultBlog.body.user.id).toEqual(processedBlogToView.user.toString())
+
         })
 
 
         test('fails with statuscode 404 if note does not exist', async () => {
             const validNonexistingId = await helper.nonExistingId()
 
-            console.log(validNonexistingId)
-
             await api
                 .get(`/api/notes/${validNonexistingId}`)
+                .set(
+                    {
+                        "Authorization": token,
+                        "Accept": 'application/json'
+                    }
+                )
                 .expect(404)
         })
 
@@ -95,7 +149,13 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
             const invalidId = '5a3d5da59070081a82a3445'
 
             await api
-                .get(`/api/notes/${invalidId}`)
+                .get(`/api/blogs/${invalidId}`)
+                .set(
+                    {
+                        "Authorization": token,
+                        "Accept": 'application/json'
+                    }
+                )
                 .expect(400)
         })
     })
@@ -103,14 +163,21 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
 
     describe('addition of a new blog', () => {
 
-        test('a valid blog can be added ', async () => {
+        test('a valid blog can be added', async () => {
             const newBlog = {
                 title: 'async/await simplifies making async calls',
                 author: 'John Doe',
+                url: "https://pakollinen1234.wordpress.com/2021/04/11/digitaalinen-viestinta/"
             }
 
             await api
                 .post('/api/blogs')
+                .set(
+                    {
+                        "Authorization": token,
+                        "Accept": 'application/json'
+                    }
+                )
                 .send(newBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
@@ -132,6 +199,12 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
 
             await api
                 .post('/api/blogs')
+                .set(
+                    {
+                        "Authorization": token,
+                        "Accept": 'application/json'
+                    }
+                )
                 .send(newBlog)
                 .expect(400)
 
@@ -151,10 +224,16 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
             blogToUpdate["likes"] = 15
 
             await api
-            .put(`/api/blogs/${blogToUpdate.id}`)
-            .send(blogToUpdate)
-            .expect(200)
-            .expect('Content-Type', /application\/json/)
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .set(
+                    {
+                        "Authorization": token,
+                        "Accept": 'application/json'
+                    }
+                )
+                .send(blogToUpdate)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
 
             const blogsAtEnd = await helper.blogsInDb()
             expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
@@ -173,6 +252,12 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
 
             await api
                 .delete(`/api/blogs/${blogToDelete.id}`)
+                .set(
+                    {
+                        "Authorization": token,
+                        "Accept": 'application/json'
+                    }
+                )
                 .expect(204)
 
             const blogsAtEnd = await helper.blogsInDb()
@@ -186,30 +271,43 @@ describe('INTEGRATION TESTS when there is initially some notes saved', () => {
             expect(titles).not.toContain(blogToDelete.title)
         })
 
+    })
 
-        test('id is unique identifier property (not _id like in DB)', async () => {
-            const response = await api.get('/api/blogs')
-            expect(response.body[0].id).toBeDefined(); // Jest
-        })
+    test('id is unique identifier property (not _id like in DB)', async () => {
+        const response = await api.get('/api/blogs')
+            .set(
+                {
+                    "Authorization": token,
+                    "Accept": 'application/json'
+                }
+            )
+        expect(response.body[0].id).toBeDefined(); // Jest
+    })
 
 
-        test('if likes is missing it will be set to 0', async () => {
-            const newBlog = {
-                title: 'if the likes property is missing from the request, it will default to the value 0',
-                author: 'John Doe',
-            }
+    test('if likes is missing it will be set to 0', async () => {
+        const newBlog = {
+            title: 'if the likes property is missing from the request, it will default to the value 0',
+            author: 'John Doe',
+            url: 'https://fullstackopen.com/en/part4/token_authentication#exercises-4-15-4-23'
+        }
 
-            const addedBlog = await api
-                .post('/api/blogs')
-                .send(newBlog)
-                .expect(201)
-                .expect('Content-Type', /application\/json/)
+        const addedBlog = await api
+            .post('/api/blogs')
+            .set(
+                {
+                    "Authorization": token,
+                    "Accept": 'application/json'
+                }
+            )
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
 
-            expect(addedBlog.body.likes).toEqual(0)
-
-        })
+        expect(addedBlog.body.likes).toEqual(0)
 
     })
+
 })
 
 

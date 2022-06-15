@@ -1,10 +1,11 @@
 # https://github.com/Huachao/vscode-restclient/blob/master/README.md#usage
-PUT http://localhost:3001/api/blogs/62777b7356e82c2b8259c4de
+PUT http://localhost:3001/api/blogs/62a1bd7f03233304a27f024f
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlcHBvIiwiaWQiOiI2MjljNmNiY2EwMzliYTRjYjBhMzAyZTUiLCJpYXQiOjE2NTUzMDc3MzQsImV4cCI6MTY1NTMxMTMzNH0.QSqtVT6H-7qO9lQYsZsxFLC0cVzANaozca8czGQhRaw
 
 {
-    "title": "JSON-LD",
-    "author": "Mika Le Gall",
+    "title": "uusi yritys!",
+    "author": "testaajan teppo",
     "url": "https://pakollinen1234.wordpress.com/2021/04/11/digitaalinen-viestinta/",
     "likes": 2
 }

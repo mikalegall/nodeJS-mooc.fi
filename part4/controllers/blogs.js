@@ -64,22 +64,41 @@ blogsRouter.get('/:id', async (request, response) => {
 // REST crUd: UPDATE
 blogsRouter.put('/:id', async (request, response) => {
   // https://github.com/blakehaswell/mongoose-unique-validator#find--updates
-  const { title, author, url, likes, userId } = request.body
-  const user = await User.findById(userId)
+  const { title, author, url, likes } = request.body
 
-  const blog = {
+const userId = request.headers.user._id.toString()
+
+const blog = await Blog.findById(request.params.id)
+
+if (!blog) {
+  return response.status(400).json({
+    error: `Id ${request.params.id} does not exist SUOMI`
+  })
+} else if (blog.user.toString() === userId) {
+
+  const newBlogEntry = {
     title: title,
     author: author,
     url: url,
     likes: likes || 0,
-    user: user._id
+    user: userId
   }
 
   // https://fullstackopen.com/en/part3/saving_data_to_mongo_db#other-operations
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true, runValidators: true, context: 'query' })
-  user.blogs = user.blogs.concat(updatedBlog._id)
-  await user.save()
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, newBlogEntry, { new: true, runValidators: true, context: 'query' })
+  //user.blogs = user.blogs.concat(updatedBlog._id)
+  //await user.save()
   response.json(updatedBlog)
+
+} else {
+
+  return response.status(403).json({
+    error: 'Blog can be updated only by the owner'
+  })
+
+}
+
+
 })
 
 

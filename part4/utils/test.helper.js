@@ -8,6 +8,7 @@ const initialBlogs = [
     author: "Michael Chan",
     url: "https://reactpatterns.com/",
     likes: 7,
+    user: "629c6cbca039ba4cb0a302e5",
     __v: 0
   },
   {
@@ -16,6 +17,7 @@ const initialBlogs = [
     author: "Edsger W. Dijkstra",
     url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
     likes: 5,
+    user: "6293a8df6e075431a4d8179a",
     __v: 0
   },
   {
@@ -24,6 +26,7 @@ const initialBlogs = [
     author: "Edsger W. Dijkstra",
     url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     likes: 12,
+    user: "6293a8df6e075431a4d8179a",
     __v: 0
   },
   {
@@ -32,6 +35,7 @@ const initialBlogs = [
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
     likes: 10,
+    user: "6293a8df6e075431a4d8179a",
     __v: 0
   },
   {
@@ -40,6 +44,7 @@ const initialBlogs = [
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
     likes: 0,
+    user: "6293a8df6e075431a4d8179a",
     __v: 0
   },
   {
@@ -48,32 +53,17 @@ const initialBlogs = [
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
     likes: 2,
+    user: "6293a8df6e075431a4d8179a",
     __v: 0
   }
 ]
 
 const initialUsers = [
   {
-    _id: "6293a54dcfe03ee330193dcf",
-    username: "lare",
-    name: "Mika Le Gall",
-    passwordHash: "$2b$10$OUaw5SVDngVl1//yOETtkuKy0frtNwdhRA20DPh5jisffBb0hIDhu",
-    blogs: [],
-    __v: 0
-  },
-  {
-    _id: "6293a8df6e075431a4d8179a",
-    username: "joo",
-    name: "Mika Le Gall",
-    passwordHash: "$2b$10$P5vcKa5tFZjKufrvopfRj..IZbIiiX.GVFUZKTVlyEsMd6qv1cb9G",
-    blogs: [],
-    __v: 0
-  },
-  {
-    _id: "6293a96758dbe41aece155ac",
-    username: "Lare",
-    name: "Mika Le Gall",
-    passwordHash: "$2b$10$PP4Ml3BgwBIRbi.fy0aqhuJ71tLiGnUiu2zIP24Q39sao9KXXvGeK",
+    _id: "629c6cbca039ba4cb0a302e5",
+    username: "teppo",
+    name: "Teppo Testaaja",
+    passwordHash: "$2b$10$vLw7demYYZ1XuvXcPOh0dOgUJ.Cu3mFXs4AHLSS4KCA53UBVkIhc.",
     blogs: [],
     __v: 0
   },
@@ -82,13 +72,13 @@ const initialUsers = [
     username: "jookoskookos",
     name: "Mika Le Gall",
     passwordHash: "$2b$10$GbXkW584CvvMn86UByDB8.PC24eENHRXM9K0y6kg9KS7FIpVS3nuK",
-    blogs: [],
+    blogs: ['5a422a851b54a676234d17f7'],
     __v: 0
   }
-]  
+] 
 
 const nonExistingId = async () => {
-  const blog = new Blog({ title: 'willremovethissoon' })
+  const blog = new Blog({ title: 'willremovethissoon', url: 'https://www.mooc.fi/en/' })
   await blog.save()
   await blog.remove()
 
